@@ -82,6 +82,13 @@ class Modulator {
         if (file_exists($js_path)) {
             wp_enqueue_script('module-' . $name, $js_url);
         }
+
+        // CSS automatisch einbinden
+        $css_path = $this->module_path . '/style.css';
+        $css_url = $this->module_url . '/style.css';
+        if (file_exists($css_path)) {
+            wp_enqueue_style('module-' . $name, $css_url);
+        }
     }
 
 
@@ -148,6 +155,7 @@ class Modulator {
             // nicht ===, damit auch Strings als Condition genutzt werden können
             // != true statt == true, wenn ein ! am Anfang der Condition steht
             if (substr($condition, 0, 1) == '!') {
+                $condition = substr($condition, 1); // ! am Anfang abschneiden
                 $condition_is_true = (!isset($vars[$condition]) OR !$vars[$condition]);
             } else {
                 $condition_is_true = (isset($vars[$condition]) AND $vars[$condition]);
