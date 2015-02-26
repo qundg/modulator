@@ -146,7 +146,14 @@ class Modulator {
 
             // prüfen, ob eine Variable zu dieser Condition vorliegt und ob sie == true ist
             // nicht ===, damit auch Strings als Condition genutzt werden können
-            if (isset($vars[$condition]) AND $vars[$condition] == true) {
+            // != true statt == true, wenn ein ! am Anfang der Condition steht
+            if (substr($condition, 0, 1) == '!') {
+                $condition_is_true = (!isset($vars[$condition]) OR !$vars[$condition]);
+            } else {
+                $condition_is_true = (isset($vars[$condition]) AND $vars[$condition]);
+            }
+
+            if ($condition_is_true) {
                 $template = str_replace($replace, $content, $template);
             } else { // kompletten if-Block entfernen, wenn weder Condition noch Variable mit dem Namen vorliegen
                 $template = str_replace($replace, '', $template);
