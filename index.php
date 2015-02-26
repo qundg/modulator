@@ -177,9 +177,9 @@ class Modulator {
             if (isset($loops[$loop])) {
                 $loop_content = '';
                 foreach ($loops[$loop] as $loop_vars) {
-                    $content = $this->parse_ifs($content, $loop_vars, $loop);
-                    $content = $this->insert_vars($content, $loop_vars, $loop);
-                    $loop_content .= $content;
+                    $parsed_content = $this->parse_ifs($content, $loop_vars, $loop);
+                    $parsed_content = $this->insert_vars($parsed_content, $loop_vars, $loop);
+                    $loop_content .= $parsed_content;
                 }
                 $template = str_replace($replace, $loop_content, $template);
             } else {
