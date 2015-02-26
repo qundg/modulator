@@ -5,7 +5,7 @@
  * Version: 1.0
  * Author: Dennis Hingst
  * Author URI: https://www.qundg.de
- */ 
+ */
 
 
 // Skript bei Direktaufruf killen
