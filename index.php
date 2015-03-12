@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 1.0
+ * Version: 1.0.1
  * Author: Dennis Hingst
  * Author URI: https://www.qundg.de
  */
@@ -15,25 +15,28 @@ if(!defined('ABSPATH')) die();
 /**
  * Module im Unterverzeichnis modules des aktuellen Themes automatisch einbinden
  */
-$modules_path = get_template_directory() . '/modules';
-if (is_dir($modules_path)) {
-    $module_dirs = scandir($modules_path);
-    foreach ($module_dirs as $module_dir) {
-        $module_path = $modules_path . '/' . $module_dir;
+add_action('plugins_loaded', 'modulator_include_modules');
+function modulator_include_modules() {
+    $modules_path = get_template_directory() . '/modules';
+    if (is_dir($modules_path)) {
+        $module_dirs = scandir($modules_path);
+        foreach ($module_dirs as $module_dir) {
+            $module_path = $modules_path . '/' . $module_dir;
 
-        // Verzeichnisse mit . im Namen ignorieren
-        if (strpos($module_dir, '.') !== false OR !is_dir($module_path)) {
-            continue;
-        }
+            // Verzeichnisse mit . im Namen ignorieren
+            if (strpos($module_dir, '.') !== false OR !is_dir($module_path)) {
+                continue;
+            }
 
-        // composer.php soll Klasse für den Visual Composer enthalten
-        if (file_exists($module_path . '/composer.php')) {
-            require_once($module_path . '/composer.php');
-        }
+            // composer.php soll Klasse für den Visual Composer enthalten
+            if (file_exists($module_path . '/composer.php')) {
+                require_once($module_path . '/composer.php');
+            }
 
-        // generic.php sollte eine Funktion für eine generische Darstellung des Elements enthalten
-        if (file_exists($module_path . '/generic.php')) {
-            require_once($module_path . '/generic.php');
+            // generic.php sollte eine Funktion für eine generische Darstellung des Elements enthalten
+            if (file_exists($module_path . '/generic.php')) {
+                require_once($module_path . '/generic.php');
+            }
         }
     }
 }
