@@ -288,4 +288,14 @@ class Modulator {
         echo $template;
     }
 
+
+    /**
+     * Ifs, Loops und Variablen im HTML ersetzen und Template zurückgeben
+     */
+    public function get_html() {
+        ob_start();
+        $this->output();
+        return ob_get_clean();
+    }
+
 }
