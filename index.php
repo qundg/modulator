@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Modulator
- * Description:
+ * Description: Modulare Webentwicklung für Wordpress!
  * Version: 1.0
  * Author: Dennis Hingst
  * Author URI: https://www.qundg.de
@@ -44,6 +44,7 @@ class Modulator {
     private static $base_path = ''; // Basispfad für alle Module
     private static $base_url = ''; // Basis-URL für alle Module
 
+    private $globals = array();
     private $vars = array();
     private $loops = array();
     private $module_path = '';
@@ -89,6 +90,10 @@ class Modulator {
         if (file_exists($css_path)) {
             wp_enqueue_style('module-' . $name, $css_url);
         }
+
+        // globale Variablen definieren
+        $this->globals['home_url'] = home_url('/');
+        $this->globals['template_url'] = get_template_directory_uri();
     }
 
 
@@ -125,6 +130,32 @@ class Modulator {
         }
 
         $this->loops[$loop_name][] = $new_item;
+    }
+
+
+    /**
+     * Globale Variablen ersetzen (z.B. template_url, home_url)
+     *
+     * @param string $template HTML des Templates
+     * @return string Template-String mit eingesetzten globalen Variablen
+     */
+    private function insert_globals($template) {
+        $regex = '/%%global:(.*)%%/misU'; // %%global:match%%
+        $matches = array();
+        preg_match_all($regex, $template, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $replace = $match[0];
+            $var = $match[1];
+
+            if (isset($this->globals[$var])) {
+                $template = str_replace($replace, $this->globals[$var], $template);
+            } else {
+                $template = str_replace($replace, '', $template);
+            }
+        }
+
+        return $template;
     }
 
 
@@ -180,8 +211,8 @@ class Modulator {
      * @return string Template-String mit verarbeiteten Loops
      */
     private function parse_loops($template, $loops) {
-        $matches = array();
         $regex = '/%%loop:(.*)%%(.*)%%\/loop:\1%%/misU'; // %%loop:match1%% match2 %%/loop:match1%%
+        $matches = array();
         preg_match_all($regex, $template, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
@@ -248,6 +279,7 @@ class Modulator {
 
         $template = $this->parse_ifs($template, $this->vars);
         $template = $this->parse_loops($template, $this->loops);
+        $template = $this->insert_globals($template);
         $template = $this->insert_vars($template, $this->vars);
 
         echo $template;
