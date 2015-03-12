@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Dennis Hingst
  * Author URI: https://www.qundg.de
  */
