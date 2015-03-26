@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Dennis Hingst
  * Author URI: https://www.qundg.de
  */
@@ -29,7 +29,7 @@ function modulator_include_modules() {
             }
 
             // composer.php soll Klasse für den Visual Composer enthalten
-            if (file_exists($module_path . '/composer.php')) {
+            if (file_exists($module_path . '/composer.php') AND class_exists('Layotter')) {
                 require_once($module_path . '/composer.php');
             }
 
