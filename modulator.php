@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.0.1
+ * Version: 2.1.0
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  */
@@ -123,10 +123,11 @@ class Modulator {
      * @throws Exception If the Twig template file doesn't exist
      */
     public function output($values, $render_backend = false) {
+        $values = self::add_globals($values);
+
         if ($render_backend) {
             if (file_exists($this->module_path . self::BACKEND_TEMPLATE)) {
                 echo self::$twig->render(self::BACKEND_TEMPLATE, $values);
-                var_dump($values);
             } else {
                 throw new Exception(sprintf('Kein Backend-Template für das Modul %s gefunden.', $this->name));
             }
@@ -137,6 +138,24 @@ class Modulator {
                 throw new Exception(sprintf('Kein Backend-Template für das Modul %s gefunden.', $this->name));
             }
         }
+    }
+
+
+    /**
+     * Add global variables that can be used in any module
+     *
+     * Access these variables like this: {{ globals.home_url }}
+     *
+     * @param array $values User-defined values
+     * @return array Values with globals
+     */
+    private static function add_globals($values) {
+        $values['globals'] = [
+            'home_url' => home_url('/'),
+            'theme_url' => get_template_directory_uri(),
+            'images_url' => get_template_directory_uri() . '/assets/img'
+        ];
+        return $values;
     }
 
 
