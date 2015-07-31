@@ -84,7 +84,7 @@ class Modulator {
 
         // error if the directory doesn't exist
         if (!is_dir($this->module_path)) {
-            throw new Exception(sprintf('Kein Modul mit dem Namen %s gefunden.', $this->name));
+            throw new Exception(sprintf('Couldn\'t find a module by the name %s.', $this->name));
         }
 
         // include JS automatically
@@ -150,13 +150,13 @@ class Modulator {
             if (file_exists($this->module_path . self::BACKEND_TEMPLATE)) {
                 echo self::$twig->render(self::BACKEND_TEMPLATE, $values);
             } else {
-                throw new Exception(sprintf('Kein Backend-Template für das Modul %s gefunden.', $this->name));
+                throw new Exception(sprintf('Backend template is missing for the module %s.', $this->name));
             }
         } else {
             if (file_exists($this->module_path . self::FRONTEND_TEMPLATE)) {
                 echo self::$twig->render(self::FRONTEND_TEMPLATE, $values);
             } else {
-                throw new Exception(sprintf('Kein Backend-Template für das Modul %s gefunden.', $this->name));
+                throw new Exception(sprintf('Frontend template is missing for the module %s.', $this->name));
             }
         }
     }
