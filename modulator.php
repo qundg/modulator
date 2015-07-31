@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  */
@@ -58,6 +58,7 @@ class Modulator {
 
     private static $twig_loader = null;
     private static $twig = null;
+    private static $timber_vars = null;
 
 
     /**
@@ -102,9 +103,24 @@ class Modulator {
 
         // create Twig instance once
         if (self::$twig_loader === null) {
+            // unfortunately, Timber doesn't provide a way to share its Twig instance, so we'll have to create our own
             self::$twig_loader = new Twig_Loader_Filesystem();
             self::$twig = new Twig_Environment();
             self::$twig->setLoader(self::$twig_loader);
+
+            // if Timber is available, make use of its custom functions and variables
+            if (class_exists('Timber')) {
+                self::$twig = apply_filters('twig_apply_filters', self::$twig);
+                self::$twig = apply_filters('timber/loader/twig', self::$twig);
+
+                // remove timber.posts, its content is undefined in the context of Modulator
+                $timber_context = Timber::get_context();
+                if (isset($timber_context['posts'])) {
+                    unset($timber_context['posts']);
+                }
+
+                self::$timber_vars = $timber_context;
+            }
         }
 
         // set templates paths for this template
@@ -124,6 +140,11 @@ class Modulator {
      */
     public function output($values, $render_backend = false) {
         $values = self::add_globals($values);
+
+        // include Timber variables
+        if (self::$timber_vars !== null) {
+            $values['timber'] = self::$timber_vars;
+        }
 
         if ($render_backend) {
             if (file_exists($this->module_path . self::BACKEND_TEMPLATE)) {
