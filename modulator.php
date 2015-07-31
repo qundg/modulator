@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.1.1
+ * Version: 2.1.2
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  */
@@ -28,12 +28,22 @@ function modulator_include_modules() {
                 continue;
             }
 
-            // composer.php should contain the Layotter element class
-            if (file_exists($module_path . '/composer.php') AND class_exists('Layotter')) {
-                require_once($module_path . '/composer.php');
+            if (class_exists('Layotter')) {
+                // layotter.php should contain the Layotter element class
+                if (file_exists($module_path . '/layotter.php')) {
+                    require_once($module_path . '/layotter.php');
+                }
+                // deprecated old file name: composer.php
+                if (file_exists($module_path . '/composer.php')) {
+                    require_once($module_path . '/composer.php');
+                }
             }
 
-            // generic.php should contain a function for a generic representation of this module
+            // factory.php may contain an optional factory function for this module
+            if (file_exists($module_path . '/factory.php')) {
+                require_once($module_path . '/factory.php');
+            }
+            // deprecated old file name: generic.php
             if (file_exists($module_path . '/generic.php')) {
                 require_once($module_path . '/generic.php');
             }
