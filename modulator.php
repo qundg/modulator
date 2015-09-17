@@ -10,6 +10,12 @@
 defined ('ABSPATH') or die ();
 
 
+// Global shortcuts
+define('MODULATOR_HOME_URL', home_url('/'));
+define('MODULATOR_THEME_URL', get_template_directory_uri());
+define('MODULATOR_IMAGES_URL', get_template_directory_uri() . '/assets/img');
+
+
 // autoloader for Twig
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -49,6 +55,18 @@ function modulator_include_modules() {
             }
         }
     }
+}
+
+
+// Make global Modulator vars accessible in Timber templates as well
+add_filter('timber_context', 'modulator_add_to_timber_context');
+function modulator_add_to_timber_context($context) {
+    $context['globals'] = array(
+        'home_url' => MODULATOR_HOME_URL,
+        'theme_url' => MODULATOR_THEME_URL,
+        'images_url' => MODULATOR_IMAGES_URL,
+    );
+    return $context;
 }
 
 
@@ -182,9 +200,9 @@ class Modulator {
      */
     private static function add_globals($values) {
         $values['globals'] = [
-            'home_url' => home_url('/'),
-            'theme_url' => get_template_directory_uri(),
-            'images_url' => get_template_directory_uri() . '/assets/img'
+            'home_url' => MODULATOR_HOME_URL,
+            'theme_url' => MODULATOR_THEME_URL,
+            'images_url' => MODULATOR_IMAGES_URL
         ];
         return $values;
     }
