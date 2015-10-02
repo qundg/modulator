@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.1.3
+ * Version: 2.1.4
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  */
@@ -119,14 +119,14 @@ class Modulator {
         $js_path = $this->module_path . self::JS_FILE;
         $js_url  = $this->module_url . self::JS_FILE;
         if (file_exists($js_path)) {
-            wp_enqueue_script('module-' . $this->name, $js_url, ['jquery']);
+            //wp_enqueue_script('module-' . $this->name, $js_url, ['jquery']);
         }
 
         // include CSS automatically
         $css_path = $this->module_path . self::CSS_FILE;
         $css_url  = $this->module_url . self::CSS_FILE;
         if (file_exists($css_path)) {
-            wp_enqueue_style('module-' . $this->name, $css_url);
+            //wp_enqueue_style('module-' . $this->name, $css_url);
         }
 
         // create Twig instance once
