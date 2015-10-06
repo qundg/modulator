@@ -2,12 +2,15 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.2.0
+ * Version: 2.2.1
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
+ * GitHub Plugin URI: qundg/modulator
  */
 
-defined ('ABSPATH') or die ();
+
+// Disallow calls outside of Wordpress
+defined ('ABSPATH') or die();
 
 
 // Global shortcuts
@@ -16,7 +19,7 @@ define('MODULATOR_THEME_URL', get_template_directory_uri());
 define('MODULATOR_IMAGES_URL', get_template_directory_uri() . '/assets/img');
 
 
-// autoloader for Twig
+// Autoloader for Twig
 require_once __DIR__ . '/vendor/autoload.php';
 
 
@@ -58,7 +61,7 @@ function modulator_include_modules() {
 }
 
 
-// Make global Modulator vars accessible in Timber templates as well
+// Make global Modulator vars accessible in Timber templates (via the globals namespace)
 add_filter('timber_context', 'modulator_add_to_timber_context');
 function modulator_add_to_timber_context($context) {
     $context['globals'] = array(
@@ -112,7 +115,7 @@ class Modulator {
 
         // create Twig instance once
         if (self::$twig_loader === null) {
-            // unfortunately, Timber doesn't provide a way to share its Twig instance, so we'll have to create our own
+            // unfortunately, Timber currently doesn't provide a way to share its Twig instance, so we'll have to create our own
             self::$twig_loader = new Twig_Loader_Filesystem();
             self::$twig = new Twig_Environment();
             self::$twig->setLoader(self::$twig_loader);
@@ -123,12 +126,13 @@ class Modulator {
                 self::$twig = apply_filters('timber/twig/filters', self::$twig);
                 self::$twig = apply_filters('timber/loader/twig', self::$twig);
 
-                // remove timber.posts, its content is undefined in the context of Modulator
+                // remove timber.posts, its content is undefined in Modulator's context
                 $timber_context = Timber::get_context();
                 if (isset($timber_context['posts'])) {
                     unset($timber_context['posts']);
                 }
 
+                // will be used in $this->output()
                 self::$timber_vars = $timber_context;
             }
         }
@@ -173,9 +177,23 @@ class Modulator {
 
 
     /**
-     * Add global variables that can be used in any module
+     * Return view HTML
      *
-     * Access these variables like this: {{ globals.home_url }}
+     * @param array $values Field values for the Twig template
+     * @param bool $render_backend true to render the backend template, false to render frontend
+     * @return string View HTML
+     */
+    public function get_html($values, $render_backend = false) {
+        ob_start();
+        $this->output($values, $render_backend);
+        return ob_get_clean();
+    }
+
+
+    /**
+     * Add helpful global variables that can be used in any module
+     *
+     * Access through the globals namespace: {{ globals.home_url }}
      *
      * @param array $values User-defined values
      * @return array Values with globals
@@ -187,20 +205,6 @@ class Modulator {
             'images_url' => MODULATOR_IMAGES_URL
         ];
         return $values;
-    }
-
-
-    /**
-     * Return view HTML
-     *
-     * @param array $values Field values for the Twig template
-     * @param bool $render_backend true to render the backend template, false to render frontend
-     * @return string View HTML
-     */
-    public function get_html($values, $render_backend = false) {
-        ob_start();
-        $this->output($values, $render_backend);
-        return ob_get_clean();
     }
 
 }
