@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.1.4
+ * Version: 2.2.0
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  */
@@ -74,15 +74,11 @@ class Modulator {
 
     const BACKEND_TEMPLATE = '/views/backend.twig';
     const FRONTEND_TEMPLATE = '/views/frontend.twig';
-    const JS_FILE = '/assets/js/script.js';
-    const CSS_FILE = '/assets/css/style.css';
 
+    private $name;
     private static $base_path = ''; // base path for all modules
     private static $base_url = ''; // base URL for all modules
     private $module_path = ''; // specific path for this module
-    private $module_url = ''; // specific URL for this module
-
-    private $name;
 
     private static $twig_loader = null;
     private static $twig = null;
@@ -106,27 +102,12 @@ class Modulator {
         $this->name = strval($name);
         $this->name = str_replace('.', '', ($this->name));
 
-        // define path and URL for this module
+        // get path for this module
         $this->module_path = self::$base_path . '/' . $this->name;
-        $this->module_url  = self::$base_url . '/' . $this->name;
 
         // error if the directory doesn't exist
         if (!is_dir($this->module_path)) {
             throw new Exception(sprintf('Couldn\'t find a module by the name %s.', $this->name));
-        }
-
-        // include JS automatically
-        $js_path = $this->module_path . self::JS_FILE;
-        $js_url  = $this->module_url . self::JS_FILE;
-        if (file_exists($js_path)) {
-            //wp_enqueue_script('module-' . $this->name, $js_url, ['jquery']);
-        }
-
-        // include CSS automatically
-        $css_path = $this->module_path . self::CSS_FILE;
-        $css_url  = $this->module_url . self::CSS_FILE;
-        if (file_exists($css_path)) {
-            //wp_enqueue_style('module-' . $this->name, $css_url);
         }
 
         // create Twig instance once
@@ -139,6 +120,7 @@ class Modulator {
             // if Timber is available, make use of its custom functions and variables
             if (class_exists('Timber')) {
                 self::$twig = apply_filters('twig_apply_filters', self::$twig);
+                self::$twig = apply_filters('timber/twig/filters', self::$twig);
                 self::$twig = apply_filters('timber/loader/twig', self::$twig);
 
                 // remove timber.posts, its content is undefined in the context of Modulator
