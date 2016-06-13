@@ -116,7 +116,8 @@ class Modulator {
         $this->module_path = self::$base_path . '/' . $this->name;
 
         // error if the directory doesn't exist
-        /*if (!is_dir($this->module_path)) {
+
+        if (!is_dir($this->module_path)) {
             if(is_array(self::$additional_paths) && count(self::$additional_paths)) {
                 foreach(self::$additional_paths as $additional_path)  {
                     if(is_dir($additional_path)) {
@@ -124,8 +125,7 @@ class Modulator {
                     }
                 }
             }
-        }*/
-
+        }
         // error if the directory doesn't exist
         if (!is_dir($this->module_path)) {
             throw new Exception(sprintf('Couldn\'t find a module by the name %s.', $this->name));
