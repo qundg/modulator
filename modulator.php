@@ -27,7 +27,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 add_action('after_setup_theme', 'modulator_include_modules');
 function modulator_include_modules() {
     $modules_paths = [get_template_directory() . '/modules'];
-    #$modules_paths = apply_filters( 'modulator/settings/load_modules', $modules_paths);
+    $modules_paths = apply_filters( 'modulator/settings/load_modules', $modules_paths);
     foreach($modules_paths as $modules_path) {
         if (is_dir($modules_path)) {
             $module_dirs = scandir($modules_path);
@@ -106,7 +106,7 @@ class Modulator {
             self::$base_url  = get_template_directory_uri() . '/modules';
         }
 
-        #self::$additional_paths = apply_filters( 'modulator/settings/load_modules', self::$additional_paths);
+        self::$additional_paths = apply_filters( 'modulator/settings/load_modules', self::$additional_paths);
 
         // clean module name (= directory)
         $this->name = strval($name);
