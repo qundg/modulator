@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.2.1
+ * Version: 2.2.2
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  * GitHub Plugin URI: qundg/modulator
@@ -24,37 +24,40 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 
 // Automatically include all modules in the theme_base/modules/ directory
-add_action('plugins_loaded', 'modulator_include_modules');
+add_action('after_setup_theme', 'modulator_include_modules');
 function modulator_include_modules() {
-    $modules_path = get_template_directory() . '/modules';
-    if (is_dir($modules_path)) {
-        $module_dirs = scandir($modules_path);
-        foreach ($module_dirs as $module_dir) {
-            $module_path = $modules_path . '/' . $module_dir;
+    $modules_paths = [get_template_directory() . '/modules'];
+    $modules_paths = apply_filters( 'modulator/settings/load_modules', $modules_paths);
+    foreach($modules_paths as $modules_path) {
+        if (is_dir($modules_path)) {
+            $module_dirs = scandir($modules_path);
+            foreach ($module_dirs as $module_dir) {
+                $module_path = $modules_path.'/'.$module_dir;
 
-            // ignore directories containing '.'
-            if (strpos($module_dir, '.') !== false OR !is_dir($module_path)) {
-                continue;
-            }
-
-            if (class_exists('Layotter')) {
-                // layotter.php should contain the Layotter element class
-                if (file_exists($module_path . '/layotter.php')) {
-                    require_once($module_path . '/layotter.php');
+                // ignore directories containing '.'
+                if (strpos($module_dir, '.') !== false OR !is_dir($module_path)) {
+                    continue;
                 }
-                // deprecated old file name: composer.php
-                if (file_exists($module_path . '/composer.php')) {
-                    require_once($module_path . '/composer.php');
-                }
-            }
 
-            // factory.php may contain an optional factory function for this module
-            if (file_exists($module_path . '/factory.php')) {
-                require_once($module_path . '/factory.php');
-            }
-            // deprecated old file name: generic.php
-            if (file_exists($module_path . '/generic.php')) {
-                require_once($module_path . '/generic.php');
+                if (class_exists('Layotter')) {
+                    // layotter.php should contain the Layotter element class
+                    if (file_exists($module_path.'/layotter.php')) {
+                        require_once($module_path.'/layotter.php');
+                    }
+                    // deprecated old file name: composer.php
+                    if (file_exists($module_path.'/composer.php')) {
+                        require_once($module_path.'/composer.php');
+                    }
+                }
+
+                // factory.php may contain an optional factory function for this module
+                if (file_exists($module_path.'/factory.php')) {
+                    require_once($module_path.'/factory.php');
+                }
+                // deprecated old file name: generic.php
+                if (file_exists($module_path.'/generic.php')) {
+                    require_once($module_path.'/generic.php');
+                }
             }
         }
     }
@@ -87,6 +90,8 @@ class Modulator {
     private static $twig = null;
     private static $timber_vars = null;
 
+    private static $additional_paths = [];
+
 
     /**
      * Create module
@@ -101,6 +106,8 @@ class Modulator {
             self::$base_url  = get_template_directory_uri() . '/modules';
         }
 
+        self::$additional_paths = apply_filters( 'modulator/settings/load_modules', self::$additional_paths);
+
         // clean module name (= directory)
         $this->name = strval($name);
         $this->name = str_replace('.', '', ($this->name));
@@ -108,6 +115,17 @@ class Modulator {
         // get path for this module
         $this->module_path = self::$base_path . '/' . $this->name;
 
+        // error if the directory doesn't exist
+
+        if (!is_dir($this->module_path)) {
+            if(is_array(self::$additional_paths) && count(self::$additional_paths)) {
+                foreach(self::$additional_paths as $additional_path)  {
+                    if(is_dir($additional_path)) {
+                        $this->module_path = $additional_path . '/' . $this->name;
+                    }
+                }
+            }
+        }
         // error if the directory doesn't exist
         if (!is_dir($this->module_path)) {
             throw new Exception(sprintf('Couldn\'t find a module by the name %s.', $this->name));
