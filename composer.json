@@ -1,0 +1,15 @@
+{
+    "name": "qundg/modulator",
+    "description": "Modulator hilft bei der modularen Webentwicklung für Wordpress.",
+    "require": {
+        "composer/installers": "^1.2",
+        "twig/twig": "*"
+    },
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "quäntchen + glück",
+            "email": "dev@qundg.de"
+        }
+    ]
+}
