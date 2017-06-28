@@ -123,9 +123,13 @@ class Modulator {
             // if Timber is available, make use of its custom functions and variables
             if (class_exists('Timber')) {
                 self::$twig = apply_filters('twig_apply_filters', self::$twig);
-                self::$twig = apply_filters('timber/twig/filters', self::$twig);
-                self::$twig = apply_filters('timber/loader/twig', self::$twig);
 
+
+	            self::$twig = apply_filters('twig_apply_filters', self::$twig);
+	            self::$twig = apply_filters('timber/twig/filters', self::$twig);
+	            self::$twig = apply_filters('timber/twig/functions', self::$twig);
+	            self::$twig = apply_filters('timber/twig/escapers', self::$twig);
+	            self::$twig = apply_filters('timber/loader/twig', self::$twig);
                 // remove timber.posts, its content is undefined in Modulator's context
                 $timber_context = Timber::get_context();
                 if (isset($timber_context['posts'])) {
