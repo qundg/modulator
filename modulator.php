@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Modulator
  * Description: Modulare Webentwicklung für Wordpress!
- * Version: 2.2.2
+ * Version: 2.2.4
  * Author: quäntchen + glück
  * Author URI: https://www.qundg.de/
  * GitHub Plugin URI: qundg/modulator
